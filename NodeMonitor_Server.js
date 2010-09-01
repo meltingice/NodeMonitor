@@ -39,7 +39,10 @@ MonitorServer.start_node_listener = function() {
 				reqs.forEach(function(req) {
 					if(req == ""){ return true; }
 					
-					console.log(JSON.parse(req));
+					//console.log(JSON.parse(req));
+					if(MonitorServer.websocket) {
+						MonitorServer.websocket.broadcast(req);
+					}
 				});
 			}
 		});
@@ -70,6 +73,10 @@ MonitorServer.start_web_server = function() {
 				return true;
 			}
 			
+			if(req.url == '/js/nodemonitor.js') {
+				data = new String(data).replace(/(\{\*NODEMONITOR_SERVER_ADDR\*\})/g, "'"+MonitorServer.config.http_listen_addr+"'");
+			}
+			
 			res.write(data);
 			res.close();
 		});
@@ -78,10 +85,7 @@ MonitorServer.start_web_server = function() {
 	this.httpserver.listen(this.config.http_listen_port);
 	
 	this.websocket = io.listen(this.httpserver);
-	this.websocket.on('connection', function(client) {
-		console.log("Web client connected!");
-		console.log(client);
-	});
+	
 }
 
 // Start the server!
