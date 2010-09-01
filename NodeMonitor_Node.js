@@ -40,8 +40,7 @@ MonitorNode.load_plugins = function() {
 
 MonitorNode.server_connect = function() {
 	this.server_conn = net.createConnection(this.config.server_port, this.config.server_addr);
-	this.server_conn.setKeepAlive(false);
-	this.server_conn.setNoDelay(true);
+	this.server_conn.setKeepAlive(true);
 	
 	this.server_conn.on('connect', function() {
 		console.log("Connected to NodeMonitor Server at " + MonitorNode.config.server_addr + ":" + MonitorNode.config.server_port);
