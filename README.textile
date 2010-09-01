@@ -1,0 +1,23 @@
+<h1>About</h1>
+NodeMonitor is a distributed server monitoring system written in Javascript for <a href="http://github.com/ry/node">Node.JS</a>. It uses WebSockets to stream the data to the browser in near-realtime, and it uses a simple plugin system to add various monitoring capabilities to each node. <b>It is currently in a very alpha phase and a lot of functionality still needs to be added.</b> This is my first time ever using Node.JS so I'm sure the code could use a lot of improvement. Anyone who would like to contribute is welcome.
+
+<h1>Requirements</h1>
+*Linux/Unix (this includes Mac OSX; sorry, no Windows)
+*<a href="http://github.com/ry/node">Node.JS</a>
+
+<h1>How to Use</h1>
+For a simple proof-of-concept:
+
+*Configure config/server_config.js and config/node_config.js with the desired values. Should be pretty straightforward.
+*Run the server on a single machine: sudo node NodeMonitor_Server.js
+*Run the node on each machine you want to monitor (can be the same machine the server is running on): sudo node NodeMonitor_Node.js
+*????????
+*PROFIT!
+
+You should see data outputted from the server to the console as it comes in from the node(s).
+
+<h1>What Needs to be Done?</h1>
+*Basic plugins need to be finalized
+*WebSocket server needs to be implemented
+*Web interface needs to be implemented
+*Lots more error handling and fault tolerance needs to be added
