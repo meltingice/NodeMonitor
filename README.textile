@@ -14,10 +14,9 @@ For a simple proof-of-concept:
 * ????????
 * PROFIT!
 
-You should see data outputted from the server to the console as it comes in from the node(s).
+Use your web browser and go to the address and port specified in the config file to visit the NodeMonitor webpage. If a node is connected, you should see data streamed to console.log() in realtime.
 
 <h1>What Needs to be Done?</h1>
 * Basic plugins need to be finalized
-* WebSocket server needs to be implemented
 * Web interface needs to be implemented
 * Lots more error handling and fault tolerance needs to be added
