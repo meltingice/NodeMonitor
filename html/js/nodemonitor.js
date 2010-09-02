@@ -29,8 +29,7 @@ var NM = window.NM || {};
 		});
 		
 		NM.socket.on('message', function(msg) {
-			var data = JSON.parse(msg);
-			console.log(data);
+			NM.parse_data(msg);
 		});
 	}	
 	
@@ -53,6 +52,12 @@ var NM = window.NM || {};
 				NM.connect();
 			}
 		}, 2000);*/
+	}
+	
+	NM.parse_data = function(data) {
+		data = JSON.parse(data);
+		console.log(data);
+		
 	}
 	
 })(window);

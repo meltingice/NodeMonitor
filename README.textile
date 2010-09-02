@@ -6,6 +6,11 @@ NodeMonitor is a distributed server monitoring system written in Javascript for 
 * <a href="http://github.com/ry/node">Node.JS</a>
 
 <h1>How to Use</h1>
+To get the code (<b>Using --recursive is very important</b>):
+<pre>
+git clone git://github.com/meltingice/NodeMonitor.git --recursive
+</pre>
+
 For a simple proof-of-concept:
 
 * Configure config/server_config.js and config/node_config.js with the desired values. Should be pretty straightforward.

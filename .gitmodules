@@ -1,0 +1,3 @@
+[submodule "plugins/lib/node-memcached"]
+	path = plugins/lib/node-memcached
+	url = git@github.com:meltingice/node-memcached.git

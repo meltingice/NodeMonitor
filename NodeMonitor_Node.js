@@ -28,10 +28,14 @@ MonitorNode.start = function() {
 MonitorNode.load_plugins = function() {
 	// Load plugins
 	var plugin_count = 0;
-	var pluginarr = fs.readdirSync('./plugins');
+	var pluginarr = fs.readdirSync('./plugins/enabled');
 	pluginarr.forEach(function(plugin) {
 		plugin = plugin.split('.')[0];
-		MonitorNode.plugins[plugin] = require('./plugins/'+plugin);
+		MonitorNode.plugins[plugin] = require('./plugins/enabled/'+plugin);
+		if(MonitorNode.config.plugin_options[plugin]) {
+			MonitorNode.plugins[plugin].set_options(MonitorNode.config.plugin_options[plugin]);
+		}
+		
 		plugin_count++;
 	});
 
@@ -55,15 +59,15 @@ MonitorNode.server_connect = function() {
 MonitorNode.execute_plugins = function() {
 	var interval = setInterval(function(){
 		for(var plugin in MonitorNode.plugins) {
-			MonitorNode.plugins[plugin].poll(function(plugin_name, data) {
-				MonitorNode.send_data(plugin_name, data);
+			MonitorNode.plugins[plugin].poll(function(plugin_name, render, data) {
+				MonitorNode.send_data(plugin_name, render, data);
 			});
 		}
 	}, 500);
 }
 
-MonitorNode.send_data = function(plugin, msg) {
-	var data = JSON.stringify({'plugin':plugin, 'msg':msg, 'origin':this.config.node_name});
+MonitorNode.send_data = function(plugin, render, data) {
+	var data = JSON.stringify({'plugin':plugin, 'render':render, 'data':data, 'origin':this.config.node_name});
 	
 	/*
 	 * I really hate doing this, but sometimes multiple pieces of data

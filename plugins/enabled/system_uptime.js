@@ -15,7 +15,15 @@ this.poll = function(callback) {
 	var exec = require('child_process').exec,
 		child;
 	
+	var self = this;
 	child = exec('uptime', function(error, stdout, stderr) {
-		callback("Uptime", stdout);
+		callback("uptime", self.render(), stdout);
 	});
+}
+
+this.render = function() {
+	return {
+		type: 'text',
+		title: 'System Uptime'
+	};
 }
