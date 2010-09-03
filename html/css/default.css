@@ -1,0 +1,89 @@
+body {
+	background-color: #f2f2f2;
+    font-family: arial, sans-serif;
+}
+
+#header {
+    padding: 20px;
+    border-bottom: 1px #d2d2d2 solid;
+}
+
+#header h1 {
+    font-weight: bold;
+    font-family: Georgia, serif;
+    font-size: 32px;
+    color: rgba(47, 30, 0, 0.8);
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8)
+}
+
+#header h2 {
+    color: #222222;
+    font-family: georgia, serif;
+    margin-top: -2px;
+    font-size: 16px;
+}
+
+#nodes {
+    width: 900px;
+    padding: 20px;
+}
+
+.node {
+    margin-bottom: 10px;
+    overflow: hidden;
+    width: 100%;
+}
+
+.node > h1 {
+    font-family: georgia, serif;
+    font-size: 20px;
+    color: rgba(47, 30, 0, 0.9);
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.node-content {
+    padding: 5px 0 0 10px;
+}
+
+.plugin {
+    float: left;
+    width:430px;
+    margin-right: 15px;
+}
+
+.plugin > h1 {
+    font-family: georgia, serif;
+    margin: 5px 0 5px 0;
+    color: #222222;
+}
+
+.text-plugin > .plugin-content {
+    border: 1px #c2c2c2 solid;
+    background-color: #e8e8e8;
+    padding: 10px;
+    font-family: arial, sans-serif;
+    font-size: 14px;
+    color: #333333;
+}
+
+.table-plugin > .plugin-content table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-plugin > .plugin-content th {
+    background-color: #e8e8e8;
+    padding: 5px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #333333;
+    border: 1px #c2c2c2 solid;
+}
+
+.table-plugin > .plugin-content td {
+    background-color: #e8e8e8;
+    padding: 5px;
+    font-size: 14px;
+    color: #333333;
+    border: 1px #c2c2c2 solid;
+}

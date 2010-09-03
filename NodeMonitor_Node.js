@@ -63,7 +63,7 @@ MonitorNode.execute_plugins = function() {
 				MonitorNode.send_data(plugin_name, render, data);
 			});
 		}
-	}, 500);
+	}, 1000);
 }
 
 MonitorNode.send_data = function(plugin, render, data) {
