@@ -9,7 +9,8 @@
  */
 
 var	fs 		= require('fs'),
-	net 	= require('net');
+	net 	= require('net'),
+	logger	= require('./lib/logger');
 
 var MonitorNode = {
 	config: require('./config/node_config'),
@@ -18,8 +19,10 @@ var MonitorNode = {
 	last_send: true
 };
 
-MonitorNode.start = function() {
-	console.log("Starting NodeMonitor Node!");
+MonitorNode.start = function() {	
+	logger.set_dest('node');
+	logger.enable_console(true);
+	logger.write("Starting NodeMonitor Node!");
 	
 	this.load_plugins();
 	this.server_connect();
@@ -39,29 +42,29 @@ MonitorNode.load_plugins = function() {
 		plugin_count++;
 	});
 
-	console.log(plugin_count + " plugins loaded.");
+	logger.write(plugin_count + " plugins loaded.");
 }
 
 MonitorNode.server_connect = function() {
 	this.server_conn = net.createConnection(this.config.server_port, this.config.server_addr);
 	
 	this.server_conn.on('connect', function() {
-		console.log("Connected to NodeMonitor Server at " + MonitorNode.config.server_addr + ":" + MonitorNode.config.server_port);
+		logger.write("Connected to NodeMonitor Server at " + MonitorNode.config.server_addr + ":" + MonitorNode.config.server_port);
 		MonitorNode.server_conn.setKeepAlive(true);
 		MonitorNode.execute_plugins();
 	});
 	this.server_conn.on('error', function(exception) {
-		console.log('Error: ' + exception.message);
+		logger.write('Error: ' + exception.message);
 		MonitorNode.server_reconnect();
 	});
 	this.server_conn.on('timeout', function() {
-		console.log('Error: connection to server timed out');
+		logger.write('Error: connection to server timed out');
 		MonitorNode.server_reconnect();
 	});
 }
 
 MonitorNode.server_reconnect = function() {
-	console.log('Attempting reconnect to server in 2 seconds...');
+	logger.write('Attempting reconnect to server in 2 seconds...');
 	setTimeout(function() {
 		MonitorNode.server_connect();
 	}, 2000);
@@ -82,7 +85,7 @@ MonitorNode.execute_plugins = function() {
 
 MonitorNode.send_data = function(plugin, render, data) {
 	if(this.server_conn.readyState != 'open' && this.server_conn.readyState != 'writeOnly') {
-		console.log('Error: socket not ready, skipping transmission.');
+		logger.write('Error: socket not ready, skipping transmission.');
 		return;
 	}
 

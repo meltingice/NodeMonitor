@@ -11,7 +11,8 @@
 var net 	= require('net'),
 	http	= require('http'),
 	io		= require('./lib/socket.io'),
-	fs		= require('fs');
+	fs		= require('fs'),
+	logger	= require('./lib/logger');
 
 var MonitorServer = {
 	config: require('./config/server_config'),
@@ -20,8 +21,10 @@ var MonitorServer = {
 	websocket: null
 };
 
-MonitorServer.start = function() {
-	console.log('Starting NodeMonitor Server!');
+MonitorServer.start = function() {	
+	logger.set_dest('server');
+	logger.enable_console(true);
+	logger.write('Starting NodeMonitor Server!');	
 	
 	this.start_node_listener();
 	this.start_web_server();
@@ -31,7 +34,8 @@ MonitorServer.start_node_listener = function() {
 	this.server = net.createServer(function(stream) {
 		stream.setEncoding('utf8');
 		stream.on('connect', function(t) {
-			console.log("Node connected!");
+			logger.write("Node connected from " + stream.remoteAddress);
+			logger.write("Now monitoring " + MonitorServer.server.connections +" node(s)");
 		});
 		stream.on('data', function(data) {
 			var reqs = data.split(/\/\/START\/\/(.*?)\/\/END\/\//);
@@ -39,7 +43,6 @@ MonitorServer.start_node_listener = function() {
 				reqs.forEach(function(req) {
 					if(req == ""){ return true; }
 					
-					//console.log(JSON.parse(req));
 					if(MonitorServer.websocket) {
 						MonitorServer.websocket.broadcast(req);
 					}
@@ -47,12 +50,12 @@ MonitorServer.start_node_listener = function() {
 			}
 		});
 		stream.on('end', function() {
-			console.log("Node disconnecting...");
+			logger.write("Node disconnecting...");
 		});
 	});
 	
 	this.server.listen(this.config.node_listen_port, this.config.node_listen_addr);
-	console.log("NodeMonitor Server now listening on " + this.config.node_listen_addr + ":" + this.config.node_listen_port);
+	logger.write("NodeMonitor Server now listening on " + this.config.node_listen_addr + ":" + this.config.node_listen_port);
 }
 
 MonitorServer.start_web_server = function() {
@@ -66,7 +69,7 @@ MonitorServer.start_web_server = function() {
 			url = req.url.replace('..', '');
 		}
 		
-		console.log(req.socket.remoteAddress + ' - ' + req.method + ' ' + url);
+		logger.write(req.socket.remoteAddress + ' - ' + req.method + ' ' + url);
 		fs.readFile('./html' + url, function(err, data) {
 			if(err) {
 				res.close();
@@ -83,9 +86,7 @@ MonitorServer.start_web_server = function() {
 	});
 	
 	this.httpserver.listen(this.config.http_listen_port);
-	
-	this.websocket = io.listen(this.httpserver);
-	
+	this.websocket = io.listen(this.httpserver);	
 }
 
 // Start the server!
