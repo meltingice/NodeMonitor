@@ -44,20 +44,34 @@ MonitorNode.load_plugins = function() {
 
 MonitorNode.server_connect = function() {
 	this.server_conn = net.createConnection(this.config.server_port, this.config.server_addr);
-	this.server_conn.setKeepAlive(true);
 	
 	this.server_conn.on('connect', function() {
 		console.log("Connected to NodeMonitor Server at " + MonitorNode.config.server_addr + ":" + MonitorNode.config.server_port);
+		MonitorNode.server_conn.setKeepAlive(true);
 		MonitorNode.execute_plugins();
 	});
 	this.server_conn.on('error', function(exception) {
 		console.log('Error: ' + exception.message);
-		process.exit(1);
+		MonitorNode.server_reconnect();
+	});
+	this.server_conn.on('timeout', function() {
+		console.log('Error: connection to server timed out');
+		MonitorNode.server_reconnect();
 	});
 }
 
+MonitorNode.server_reconnect = function() {
+	console.log('Attempting reconnect to server in 2 seconds...');
+	setTimeout(function() {
+		MonitorNode.server_connect();
+	}, 2000);
+}
+
 MonitorNode.execute_plugins = function() {
-	var interval = setInterval(function(){
+	if(this.plugin_interval)
+		clearInterval(this.plugin_interval);
+	
+	this.plugin_interval = setInterval(function(){
 		for(var plugin in MonitorNode.plugins) {
 			MonitorNode.plugins[plugin].poll(function(plugin_name, render, data) {
 				MonitorNode.send_data(plugin_name, render, data);
@@ -67,6 +81,11 @@ MonitorNode.execute_plugins = function() {
 }
 
 MonitorNode.send_data = function(plugin, render, data) {
+	if(this.server_conn.readyState != 'open' && this.server_conn.readyState != 'writeOnly') {
+		console.log('Error: socket not ready, skipping transmission.');
+		return;
+	}
+
 	var data = JSON.stringify({'plugin':plugin, 'render':render, 'data':data, 'origin':this.config.node_name});
 	
 	/*
