@@ -34,9 +34,10 @@ MonitorNode.load_plugins = function() {
 	var pluginarr = fs.readdirSync('./plugins/enabled');
 	pluginarr.forEach(function(plugin) {
 		plugin = plugin.split('.')[0];
-		MonitorNode.plugins[plugin] = require('./plugins/enabled/'+plugin);
-		if(MonitorNode.config.plugin_options[plugin]) {
-			MonitorNode.plugins[plugin].set_options(MonitorNode.config.plugin_options[plugin]);
+		var loaded = require('./plugins/enabled/'+plugin);
+		MonitorNode.plugins[loaded.name] = loaded;
+		if(MonitorNode.config.plugin_options[loaded.name]) {
+			MonitorNode.plugins[loaded.name].set_options(MonitorNode.config.plugin_options[loaded.name]);
 		}
 		
 		plugin_count++;
@@ -76,11 +77,19 @@ MonitorNode.execute_plugins = function() {
 	
 	this.plugin_interval = setInterval(function(){
 		for(var plugin in MonitorNode.plugins) {
-			MonitorNode.plugins[plugin].poll(function(plugin_name, render, data) {
-				MonitorNode.send_data(plugin_name, render, data);
-			});
+			if(!MonitorNode.plugins[plugin].plugin_status) {
+				MonitorNode.plugins[plugin].plugin_status = 'ready';
+			}
+			
+			if(MonitorNode.plugins[plugin].plugin_status == 'ready') {
+				MonitorNode.plugins[plugin].plugin_status = 'running';
+				MonitorNode.plugins[plugin].poll(function(plugin_name, render, data) {
+					MonitorNode.plugins[plugin_name].plugin_status = 'ready';
+					MonitorNode.send_data(plugin_name, render, data);
+				});
+			}
 		}
-	}, 1000);
+	}, 300);
 }
 
 MonitorNode.send_data = function(plugin, render, data) {

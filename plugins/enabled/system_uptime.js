@@ -10,6 +10,8 @@
  * Name: System Uptime Plugin
  * Desc: Reports system uptime and system load
  */
+ 
+this.name = 'uptime';
 
 this.poll = function(callback) {
 	var exec = require('child_process').exec,
@@ -17,7 +19,7 @@ this.poll = function(callback) {
 	
 	var self = this;
 	child = exec('uptime', function(error, stdout, stderr) {
-		callback("uptime", self.render(), stdout);
+		callback(self.name, self.render(), stdout);
 	});
 }
 

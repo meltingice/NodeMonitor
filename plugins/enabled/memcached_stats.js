@@ -12,7 +12,9 @@
  */
  
 var memcached = require('./../lib/node-memcached/node-memcached');
- 
+
+this.name = 'memcached_stats';
+
 this.set_options = function(options) {
 	this.options = options;
 }
@@ -39,7 +41,7 @@ this.poll = function(callback) {
 				table.push([key, stats[key]]);
 			}
 			
-			callback('memcached', self.render(), table);
+			callback(self.name, self.render(), table);
 		})
 	});
 }

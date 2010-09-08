@@ -16,6 +16,7 @@ var net 	= require('net'),
 
 var MonitorServer = {
 	config: require('./config/server_config'),
+	daemon_lock: '/tmp/nodemonitor_server.lock',
 	server: false,
 	httpserver: null,
 	websocket: null
@@ -24,10 +25,33 @@ var MonitorServer = {
 MonitorServer.start = function() {	
 	logger.set_dest('server');
 	logger.enable_console(true);
-	logger.write('Starting NodeMonitor Server!');	
+	logger.write('Starting NodeMonitor Server!');
+	
+	//this.check_for_daemonize();
 	
 	this.start_node_listener();
 	this.start_web_server();
+}
+
+MonitorServer.check_for_daemonize = function() {
+	var argv = process.argv;
+	if(argv[2] != '-d') return;
+	
+	var daemon = require('./lib/daemon');
+	
+	switch(argv[3]) {
+		case 'start':
+			logger.write('Daemonizing!');
+			this.daemonID = daemon.start();
+			daemon.lock(this.daemon_lock);
+			//daemon.closeIO();
+			break;
+		case 'stop':
+			logger.write('Stopping NodeMonitor daemon...');
+			process.kill(parseInt(fs.readFileSync(this.daemon_lock)));
+			process.exit(0);
+			break;
+	}
 }
 
 MonitorServer.start_node_listener = function() {
